@@ -6,6 +6,6 @@ COPY go.mod ./
 RUN go mod download && go mod tidy
 
 COPY main.go ./
-RUN go build -o /main
+RUN go build -o /app/main
 
-ENTRYPOINT ["/main"]
+ENTRYPOINT ["/app/main"]
