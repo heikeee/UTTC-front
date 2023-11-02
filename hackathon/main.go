@@ -1,4 +1,4 @@
-package main
+/*package main
 
 import (
 	"database/sql"
@@ -76,7 +76,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			log.Println("fail: name is empty")
 			w.WriteHeader(http.StatusBadRequest)
 			return
-		}*/
+		}
 		if len(name) > 50 {
 			log.Println("fail: name is too long")
 			w.WriteHeader(http.StatusBadRequest)
@@ -213,4 +213,38 @@ func closeDBWithSysCall() {
 		log.Printf("success: db.Close()")
 		os.Exit(0)
 	}()
+}
+*/
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+)
+
+type responseMessage struct {
+	Message string `json:"message"`
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	name := r.URL.Query().Get("name")
+	if name == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	bytes, err := json.Marshal(responseMessage{
+		Message: fmt.Sprintf("Hello, %s-san", name),
+	})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.Write(bytes)
+}
+
+func main() {
+	http.HandleFunc("/hello", handler)
+	http.ListenAndServe(":8080", nil)
 }
