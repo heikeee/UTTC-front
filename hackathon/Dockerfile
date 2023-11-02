@@ -1,6 +1,6 @@
 FROM golang as build
 
-WORKDIR /app
+WORKDIR /cd-app
 
 COPY go.mod ./
 RUN go mod download && go mod tidy
