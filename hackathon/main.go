@@ -226,9 +226,10 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	"net/http"
 	"os"
 )
+
+var db *sql.DB
 
 func main() {
 	// データベース接続の確立
@@ -246,5 +247,4 @@ func main() {
 	}
 	defer db.Close() // データベース接続をクリーンアップ
 
-	http.ListenAndServe(":8080", nil)
 }
