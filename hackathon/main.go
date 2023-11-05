@@ -223,33 +223,28 @@ func init() {
 package main
 
 import (
-	"encoding/json"
+	"database/sql"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"net/http"
+	"os"
 )
 
-type responseMessage struct {
-	Message string `json:"message"`
-}
-
-func handler(w http.ResponseWriter, r *http.Request) {
-	name := r.URL.Query().Get("name")
-	if name == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	bytes, err := json.Marshal(responseMessage{
-		Message: fmt.Sprintf("Hello, %s-san", name),
-	})
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	w.Write(bytes)
-}
-
 func main() {
-	http.HandleFunc("/hello", handler)
+	// データベース接続の確立
+	mysqlUser := os.Getenv("MYSQL_USER")
+	mysqlPwd := os.Getenv("MYSQL_PWD")
+	mysqlHost := os.Getenv("MYSQL_HOST")
+	mysqlDatabase := os.Getenv("MYSQL_DATABASE")
+
+	connStr := fmt.Sprintf("%s:%s@%s/%s", mysqlUser, mysqlPwd, mysqlHost, mysqlDatabase)
+	db, err := sql.Open("mysql", connStr)
+	if err != nil {
+		// エラーが発生した場合のエラーハンドリング
+		fmt.Printf("Error connecting to the database: %v\n", err)
+		return
+	}
+	defer db.Close() // データベース接続をクリーンアップ
+
 	http.ListenAndServe(":8080", nil)
 }
