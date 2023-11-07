@@ -78,7 +78,7 @@ import (
 type UserResForHTTPGet struct {
 	Id       string `json:"id"`
 	Name     string `json:"name"`
-	Url      string `json:"URL"`
+	Url      string `json:"Url"`
 	Category string `json:"Category"`
 }
 
@@ -131,14 +131,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		tx, err := db.Begin()
-		if err != nil {
-			log.Printf("fail: db.Begin, %v\n", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		defer tx.Rollback()
-		// ②-2
 		rows, err := db.Query("SELECT id, name, url, category FROM user")
 		if err != nil {
 			log.Printf("fail: db.Query, %v\n", err)
