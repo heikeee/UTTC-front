@@ -175,7 +175,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 		// POSTメソッドのボディをJSONとして解析
 		id := ulid.Make().String()
-		var user User
+		var user UserResForHTTPGet
 		var u UserResForHTTPPost
 		u.Id = id
 		decoder := json.NewDecoder(r.Body)
@@ -194,7 +194,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// データベースにユーザーを保存
-		_, execerr := db.Exec("INSERT INTO user (id,name,url,category) VALUES (?,?,?)", id, user.Name, user.Age)
+		_, execerr := db.Exec("INSERT INTO user (id,name,url,category) VALUES (?,?,?,?)", id, user.Name, user.Url, user.Category)
 		if execerr != nil {
 			log.Printf("fail: db.Exec, %v\n", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
