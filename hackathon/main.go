@@ -131,7 +131,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		rows, err := db.Query("SELECT id, name, url, category FROM user")
+		rows, err := db.Query("SELECT * FROM user")
 		if err != nil {
 			log.Printf("fail: db.Query, %v\n", err)
 			w.WriteHeader(http.StatusInternalServerError)
