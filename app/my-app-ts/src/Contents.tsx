@@ -29,7 +29,7 @@ function Contents() {
             /*if (!response.ok) {
                 throw new Error('Failed to fetch users');
             }*/
-            const data = await response.json();
+            const data:User[] = await response.json();
             setUsers(data);
         } catch (error) {
             // console.error('Error fetching users:', error);

@@ -83,8 +83,10 @@ type UserResForHTTPGet struct {
 }
 
 type User struct {
-	Name string `json:"name"`
-	Age  int    `json:"age"`
+	Name     string `json:"name"`
+	Age      int    `json:"age"`
+	Url      string `json:"url"`
+	Category string `json:"category"`
 }
 
 type UserResForHTTPPost struct {
@@ -137,6 +139,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
+		defer rows.Close()
 
 		// ②-3
 		users := make([]UserResForHTTPGet, 0)
