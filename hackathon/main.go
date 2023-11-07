@@ -78,8 +78,8 @@ import (
 type UserResForHTTPGet struct {
 	Id       string `json:"id"`
 	Name     string `json:"name"`
-	Url      string `json:"Url"`
-	Category string `json:"Category"`
+	Url      string `json:"url"`
+	Category string `json:"category"`
 }
 
 type User struct {
