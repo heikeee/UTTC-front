@@ -118,7 +118,7 @@ func init() {
 
 // ② /userでリクエストされたらnameパラメーターと一致する名前を持つレコードをJSON形式で返す
 func handler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set(`Access-Control-Allow-Origin`, "http://localhost:3000")
+	w.Header().Set(`Access-Control-Allow-Origin`, "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set(`Access-Control-Allow-Methods`, "GET,PUT,POST,DELETE,UPDATE,OPTIONS")
