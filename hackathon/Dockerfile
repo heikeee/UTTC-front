@@ -1,11 +1,13 @@
-FROM golang as build
+FROM golang:1.21-bullseye as builder
 
-WORKDIR /cd-app
+WORKDIR /app
 
-COPY go.mod ./
+COPY . ./
 RUN go mod download && go mod tidy
 
-COPY main.go ./
-RUN go build -o /app/main
+
+RUN go build -v -o main
+
+EXPOSE 8080
 
 ENTRYPOINT ["/app/main"]
