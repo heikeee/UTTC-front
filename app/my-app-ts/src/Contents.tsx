@@ -41,6 +41,7 @@ function Contents() {
     // アプリの初期化時にユーザー一覧を取得
     useEffect(() => {
         fetchUsers();
+        console.log(users)
     }, []);
 
     // フォームを送信して新しいユーザーをサーバーに保存する関数
@@ -96,7 +97,7 @@ function Contents() {
             <ul>
                 {users.map((user: User) => (
                     <li key={user.id}>
-                        {user.name}, {user.category} ,{user.url}
+                        {user.name},{user.category},{user.url}
                     </li>
                 ))}
             </ul>
