@@ -96,7 +96,7 @@ function Contents() {
             <ul>
                 {users.map((user: User) => (
                     <li key={user.id}>
-                        {user.name}, {user.category} ,{user.url} ,
+                        {user.name}, {user.category} ,{user.url}
                     </li>
                 ))}
             </ul>
