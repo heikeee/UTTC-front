@@ -1,7 +1,14 @@
 import React, { useState, useEffect, SyntheticEvent } from 'react';
 
+type User = {
+    id: string
+    name: string
+    url: string
+    category: string
+}
+
 function Contents() {
-    const [users, setUsers] = useState([]);
+    const [users, setUsers] = useState<User[]>([]);
     const [name, setName] = useState('');
     const [url, setUrl] = useState('');
     const [category, setCategory] = useState('');
@@ -25,8 +32,9 @@ function Contents() {
             const data = await response.json();
             setUsers(data);
         } catch (error) {
-            console.error('Error fetching users:', error);
-            setErrorMessage('Failed to fetch users');
+            // console.error('Error fetching users:', error);
+            // setErrorMessage('Failed to fetch users');
+            console.log(error)
         }
     };
 
@@ -86,7 +94,7 @@ function Contents() {
             <h1>User List</h1>
             {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
             <ul>
-                {users.map((user: any) => (
+                {users.map((user: User) => (
                     <li key={user.id}>
                         {user.name}, {user.category} ,{user.url} ,
                     </li>
