@@ -6,7 +6,7 @@ import Contents from './Contents';
 import { onAuthStateChanged } from "firebase/auth";
 import { fireAuth } from "./firebase";
 import {useState} from "react";
-
+import UserComponent from './UserComponent';
 
 const App = () => {
     // stateとしてログイン状態を管理する。ログインしていないときはnullになる。
@@ -22,6 +22,7 @@ const App = () => {
             <LoginForm />
             {/* ログインしていないと見られないコンテンツは、loginUserがnullの場合表示しない */}
             {loginUser ? <Contents /> : null}
+            {loginUser ? <UserComponent /> :null}
         </>
     );
 };
