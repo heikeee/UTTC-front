@@ -1,94 +1,118 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect, SyntheticEvent } from 'react';
 
-interface UserData {
+type User = {
     id: string;
     name: string;
     url: string;
     category: string;
-}
+};
 
-function UserComponent() {
-    const [userData, setUserData] = useState<UserData[] | null>(null); // 初期値を null に設定
-    const [newUserData, setNewUserData] = useState<{ name: string; url: string; category: string }>({
-        name: '',
-        url: '',
-        category: '',
-    });
+function UpdateUser() {
+    const [users, setUsers] = useState<User[]>([]);
+    const [name, setName] = useState('');
+    const [url, setUrl] = useState('');
+    const [category, setCategory] = useState('');
+    const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+    const [errorMessage, setErrorMessage] = useState('');
 
-    useEffect(() => {
-        // ユーザーデータを取得する関数
-        const fetchUserData = async () => {
-            try {
-                const response = await axios.get('/user');
-                setUserData(response.data);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-        fetchUserData();
-    }, []);
-
-    const handleUpdateUserData = async () => {
+    // サーバーからユーザー一覧を取得する関数
+    const fetchUsers = async () => {
         try {
-            const response = await axios.post('/user', newUserData);
-            const updatedUserData = response.data;
-            if (userData) {
-                setUserData([...userData, updatedUserData]);
-            } else {
-                setUserData([updatedUserData]); // データが存在しない場合は新しい配列を作成
-            }
-            setNewUserData({ name: '', url: '', category: '' });
+            const response = await fetch('https://utter-front-upqs344voq-uc.a.run.app/user', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            const data: User[] = await response.json();
+            setUsers(data);
         } catch (error) {
-            console.error(error);
+            console.error('Error fetching users:', error);
+            setErrorMessage('Failed to fetch users');
         }
     };
 
-    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setNewUserData((prevData) => ({ ...prevData, [name]: value }));
+    // アプリの初期化時にユーザー一覧を取得
+    useEffect(() => {
+        fetchUsers();
+    }, []);
+
+    // フォームを送信してユーザーを更新する関数
+    const handleUpdateUser = async (e: SyntheticEvent) => {
+        e.preventDefault();
+
+        // バリデーション
+        if (!selectedUserId || !name || !category || !url) {
+            setErrorMessage('ID, Name, Category, and URL are required');
+            return;
+        }
+
+        try {
+            const response = await fetch(`https://utter-front-upqs344voq-uc.a.run.app/user/${selectedUserId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, url, category }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update user');
+            }
+
+            // フォームをクリアしてユーザー一覧を更新
+            setSelectedUserId(null);
+            setName('');
+            setCategory('');
+            setUrl('');
+            setErrorMessage('');
+            fetchUsers();
+        } catch (error) {
+            console.error('Error updating user:', error);
+            setErrorMessage('Failed to update user');
+        }
     };
 
     return (
-        <div>
-            <h2>User Data</h2>
-            {userData ? ( // データが存在する場合のみマップする
-                <ul>
-                    {Object.values(userData).map((user) => (
-                        <li key={user.id}>
-                            {user.name}, {user.url}, {user.category}
-                        </li>
-                    ))}
-                </ul>
-            ) : (
-                <p>Loading...</p>
+        <div className="App">
+            <h1>Update User</h1>
+            {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+            <ul>
+                {users.map((user: User) => (
+                    <li key={user.id}>
+                        {user.id}, {user.name}, {user.category}, {user.url}
+                        <button onClick={() => setSelectedUserId(user.id)}>Edit</button>
+                    </li>
+                ))}
+            </ul>
+            {selectedUserId && (
+                <div>
+                    <h2>Update User</h2>
+                    <form onSubmit={handleUpdateUser}>
+                        <input
+                            type="text"
+                            placeholder="Name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                        />
+                        <input
+                            type="text"
+                            placeholder="Category"
+                            value={category}
+                            onChange={(e) => setCategory(e.target.value)}
+                        />
+                        <input
+                            type="text"
+                            placeholder="Url"
+                            value={url}
+                            onChange={(e) => setUrl(e.target.value)}
+                        />
+                        <button type="submit">Update</button>
+                    </form>
+                </div>
             )}
-            <div>
-                <input
-                    type="text"
-                    name="name"
-                    placeholder="Name"
-                    value={newUserData.name}
-                    onChange={handleInputChange}
-                />
-                <input
-                    type="text"
-                    name="url"
-                    placeholder="URL"
-                    value={newUserData.url}
-                    onChange={handleInputChange}
-                />
-                <input
-                    type="text"
-                    name="category"
-                    placeholder="Category"
-                    value={newUserData.category}
-                    onChange={handleInputChange}
-                />
-                <button onClick={handleUpdateUserData}>Add User</button>
-            </div>
         </div>
     );
 }
 
-export default UserComponent;
+export default UpdateUser;
