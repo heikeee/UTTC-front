@@ -1,64 +1,3 @@
-/*package main
-
-import (
-	"database/sql"
-	"fmt"
-	"log"
-	"net/http"
-	"os"
-
-	_ "github.com/go-sql-driver/mysql"
-)
-
-type UserResForHTTPGet struct {
-	Id   string `json:"id"`
-	Name string `json:"name"`
-	Age  int    `json:"age"`
-}
-
-// ① GoプログラムからMySQLへ接続
-var db *sql.DB
-
-func init() {
-	// ①-1
-	// DB接続のための準備
-	mysqlUser := os.Getenv("MYSQL_USER")
-	mysqlPwd := os.Getenv("MYSQL_PWD")
-	mysqlHost := os.Getenv("MYSQL_HOST")
-	mysqlDatabase := os.Getenv("MYSQL_DATABASE")
-
-	connStr := fmt.Sprintf("%s:%s@%s/%s", mysqlUser, mysqlPwd, mysqlHost, mysqlDatabase)
-	_db, err := sql.Open("mysql", connStr)
-
-	// ①-2
-	if err != nil {
-		log.Fatalf("fail: sql.Open, %v\n", err)
-	}
-	// ①-3
-	if err := _db.Ping(); err != nil {
-		log.Fatalf("fail: _db.Ping, %v\n", err)
-	}
-	db = _db
-}
-
-// ② /userでリクエストされたらnameパラメーターと一致する名前を持つレコードをJSON形式で返す
-func handler(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func main() {
-	// ② /userでリクエストされたらnameパラメーターと一致する名前を持つレコードをJSON形式で返す
-	http.HandleFunc("/user", handler)
-
-	// ③ Ctrl+CでHTTPサーバー停止時にDBをクローズする
-
-	// 8000番ポートでリクエストを待ち受ける
-	log.Println("Listening...")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
-		log.Fatal(err)
-	}
-}*/
-
 package main
 
 import (
@@ -80,6 +19,7 @@ type UserResForHTTPGet struct {
 	Name     string `json:"name"`
 	Url      string `json:"url"`
 	Category string `json:"category"`
+	Content  string `json:"content"`
 }
 
 type User struct {
@@ -87,6 +27,7 @@ type User struct {
 	Age      int    `json:"age"`
 	Url      string `json:"url"`
 	Category string `json:"category"`
+	Content  string `json:"content"`
 }
 
 type UserResForHTTPPost struct {
@@ -119,6 +60,7 @@ func init() {
 }
 
 // ② /userでリクエストされたらnameパラメーターと一致する名前を持つレコードをJSON形式で返す
+
 func handler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set(`Access-Control-Allow-Origin`, "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
@@ -189,7 +131,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// データベースにユーザーを保存
-		_, execerr := db.Exec("INSERT INTO user (id,name,url,category) VALUES (?,?,?,?)", id, user.Name, user.Url, user.Category)
+		_, execerr := db.Exec("INSERT INTO user (id,name,url,category,content) VALUES (?,?,?,?,?)", id, user.Name, user.Url, user.Category, user.Content)
 		if execerr != nil {
 			log.Printf("fail: db.Exec, %v\n", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -233,6 +175,7 @@ func main() {
 }
 
 // ③ Ctrl+CでHTTPサーバー停止時にDBをクローズする
+
 func closeDBWithSysCall() {
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGTERM, syscall.SIGINT)
@@ -247,3 +190,64 @@ func closeDBWithSysCall() {
 		os.Exit(0)
 	}()
 }
+
+/*package main
+
+import (
+	"database/sql"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+
+	_ "github.com/go-sql-driver/mysql"
+)
+
+type UserResForHTTPGet struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+	Age  int    `json:"age"`
+}
+
+// ① GoプログラムからMySQLへ接続
+var db *sql.DB
+
+func init() {
+	// ①-1
+	// DB接続のための準備
+	mysqlUser := os.Getenv("MYSQL_USER")
+	mysqlPwd := os.Getenv("MYSQL_PWD")
+	mysqlHost := os.Getenv("MYSQL_HOST")
+	mysqlDatabase := os.Getenv("MYSQL_DATABASE")
+
+	connStr := fmt.Sprintf("%s:%s@%s/%s", mysqlUser, mysqlPwd, mysqlHost, mysqlDatabase)
+	_db, err := sql.Open("mysql", connStr)
+
+	// ①-2
+	if err != nil {
+		log.Fatalf("fail: sql.Open, %v\n", err)
+	}
+	// ①-3
+	if err := _db.Ping(); err != nil {
+		log.Fatalf("fail: _db.Ping, %v\n", err)
+	}
+	db = _db
+}
+
+// ② /userでリクエストされたらnameパラメーターと一致する名前を持つレコードをJSON形式で返す
+func handler(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func main() {
+	// ② /userでリクエストされたらnameパラメーターと一致する名前を持つレコードをJSON形式で返す
+	http.HandleFunc("/user", handler)
+
+	// ③ Ctrl+CでHTTPサーバー停止時にDBをクローズする
+
+	// 8000番ポートでリクエストを待ち受ける
+	log.Println("Listening...")
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		log.Fatal(err)
+	}
+}*/

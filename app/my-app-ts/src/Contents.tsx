@@ -5,6 +5,7 @@ type User = {
     name: string
     url: string
     category: string
+    content: string
 }
 
 function Contents() {
@@ -12,6 +13,7 @@ function Contents() {
     const [name, setName] = useState('');
     const [url, setUrl] = useState('');
     const [category, setCategory] = useState('');
+    const [content, setContent] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
     // サーバーからユーザー一覧を取得する関数
@@ -71,7 +73,7 @@ function Contents() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ name:name, url:url, category:category }),
+                body: JSON.stringify({ name:name, url:url, category:category, content:content }),
             });
 
             if (!response.ok) {
@@ -82,6 +84,7 @@ function Contents() {
             setName('');
             setCategory('');
             setUrl('');
+            setContent('');
             setErrorMessage('');
             fetchUsers();
         } catch (error) {
@@ -97,7 +100,7 @@ function Contents() {
             <ul>
                 {users.map((user: User) => (
                     <li key={user.id}>
-                        {user.id},{user.name},{user.category},{user.url}
+                        {user.id},{user.name},{user.category},{user.url},{user.content}
                     </li>
                 ))}
             </ul>
@@ -120,6 +123,12 @@ function Contents() {
                     placeholder="Url"
                     value={url}
                     onChange={(e) => setUrl(e.target.value)}
+                />
+                <input
+                    type="text"
+                    placeholder="Content"
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
                 />
                 <button type="submit">Add </button>
             </form>
