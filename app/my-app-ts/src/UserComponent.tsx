@@ -54,7 +54,7 @@ function UserComponent() {
             <h2>User Data</h2>
             {userData ? ( // データが存在する場合のみマップする
                 <ul>
-                    {userData.map((user) => (
+                    {Object.values(userData).map((user) => (
                         <li key={user.id}>
                             {user.name}, {user.url}, {user.category}
                         </li>
