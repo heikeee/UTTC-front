@@ -9,7 +9,7 @@ interface UserData {
 }
 
 function UserComponent() {
-    const [userData, setUserData] = useState<UserData[]>([]);
+    const [userData, setUserData] = useState<UserData[] | null>(null); // 初期値を null に設定
     const [newUserData, setNewUserData] = useState<{ name: string; url: string; category: string }>({
         name: '',
         url: '',
@@ -33,7 +33,11 @@ function UserComponent() {
         try {
             const response = await axios.post('/user', newUserData);
             const updatedUserData = response.data;
-            setUserData([...userData, updatedUserData]);
+            if (userData) {
+                setUserData([...userData, updatedUserData]);
+            } else {
+                setUserData([updatedUserData]); // データが存在しない場合は新しい配列を作成
+            }
             setNewUserData({ name: '', url: '', category: '' });
         } catch (error) {
             console.error(error);
@@ -48,13 +52,17 @@ function UserComponent() {
     return (
         <div>
             <h2>User Data</h2>
-            <ul>
-                {userData.map((user) => (
-                    <li key={user.id}>
-                        {user.name}, {user.url}, {user.category}
-                    </li>
-                ))}
-            </ul>
+            {userData ? ( // データが存在する場合のみマップする
+                <ul>
+                    {userData.map((user) => (
+                        <li key={user.id}>
+                            {user.name}, {user.url}, {user.category}
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <p>Loading...</p>
+            )}
             <div>
                 <input
                     type="text"
