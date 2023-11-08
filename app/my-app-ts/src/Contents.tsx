@@ -92,7 +92,7 @@ function Contents() {
 
     return (
         <div className="App">
-            <h1>User List</h1>
+            <h1>Sannkou List</h1>
             {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
             <ul>
                 {users.map((user: User) => (
@@ -101,7 +101,7 @@ function Contents() {
                     </li>
                 ))}
             </ul>
-            <h2>Add New User</h2>
+            <h2>Add New</h2>
             <form onSubmit={handleSubmit}>
                 <input
                     type="text"
