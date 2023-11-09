@@ -183,7 +183,7 @@ function Contents() {
                     {chapters.map((chapter) => (
                         <label key={chapter}>
                             <input
-                                type="radio"
+                                type="checkbox"
                                 value={chapter}
                                 checked={selectedCategory === chapter}
                                 onChange={() => setSelectedChapter(chapter)}
