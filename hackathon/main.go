@@ -201,7 +201,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPut:
 
 		var user UserResForHTTPGet
-		var u UserResForHTTPPost
 		decoder := json.NewDecoder(r.Body)
 		if err := decoder.Decode(&user); err != nil {
 			log.Printf("fail: json decode, %v\n", err)
@@ -223,7 +222,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
-		bytes, err := json.Marshal(u)
+		bytes, err := json.Marshal(user)
 		if err != nil {
 			log.Printf("fail: json.Marshal, %v\n", err)
 			w.WriteHeader(http.StatusInternalServerError)
