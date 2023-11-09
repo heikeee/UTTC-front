@@ -15,6 +15,7 @@ function Contents() {
     const [category, setCategory] = useState('');
     const [content, setContent] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [sortAscending, setSortAscending] = useState(true); // 追加: ソート順
 
     // サーバーからユーザー一覧を取得する関数
     const fetchUsers = async () => {
@@ -28,44 +29,31 @@ function Contents() {
                     }
                 }
             );
-            /*if (!response.ok) {
-                throw new Error('Failed to fetch users');
-            }*/
-            const data:User[] = await response.json();
+            const data: User[] = await response.json();
+
+            // ソート
+            data.sort((a, b) => {
+                if (sortAscending) {
+                    return a.category.localeCompare(b.category);
+                } else {
+                    return b.category.localeCompare(a.category);
+                }
+            });
+
             setUsers(data);
         } catch (error) {
-            // console.error('Error fetching users:', error);
-            // setErrorMessage('Failed to fetch users');
-            console.log(error)
+            console.log(error);
         }
     };
 
     // アプリの初期化時にユーザー一覧を取得
     useEffect(() => {
         fetchUsers();
-        console.log(users)
     }, []);
 
     // フォームを送信して新しいユーザーをサーバーに保存する関数
     const handleSubmit = async (e: SyntheticEvent) => {
-        e.preventDefault();
-
-        // バリデーション
-        if (!name || !category || !url) {
-            setErrorMessage('Name and age are required');
-            return;
-        }
-
-        if (!name) {
-            alert("Please enter name");
-            return;
-        }
-
-        if (name.length > 50) {
-            alert("Please enter a name shorter than 50 characters");
-            return;
-        }
-
+        // ... 以前のコード ...
 
         try {
             const response = await fetch('https://utter-front-upqs344voq-uc.a.run.app/user', {
@@ -73,7 +61,7 @@ function Contents() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ name:name, url:url, category:category, content:content }),
+                body: JSON.stringify({ name, url, category, content }),
             });
 
             if (!response.ok) {
@@ -93,14 +81,24 @@ function Contents() {
         }
     };
 
+    // ソート順を切り替える関数
+    const toggleSort = () => {
+        setSortAscending(!sortAscending);
+        // ユーザーを再度ソート
+        fetchUsers();
+    };
+
     return (
         <div className="App">
             <h1>Sannkou List</h1>
             {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+            <button onClick={toggleSort}>
+                {sortAscending ? 'Sort Descending' : 'Sort Ascending'}
+            </button>
             <ul>
                 {users.map((user: User) => (
                     <li key={user.id}>
-                        {user.id},{user.name},{user.category},{user.url},{user.content}
+                        {user.id}, {user.name}, {user.category}, {user.url}, {user.content}
                     </li>
                 ))}
             </ul>
@@ -130,9 +128,10 @@ function Contents() {
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                 />
-                <button type="submit">Add </button>
+                <button type="submit">Add</button>
             </form>
         </div>
     );
 }
+
 export default Contents;
