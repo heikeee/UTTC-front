@@ -129,19 +129,6 @@ function Contents() {
                 {sortAscendingChapter ? 'Chapter Sort Ascending' : 'Chapter Sort Descending'}
             </button>
             <div>
-                {categories.map((category) => (
-                    <label key={category}>
-                        <input
-                            type="radio"
-                            value={category}
-                            checked={selectedCategory === category}
-                            onChange={() => handleCategorySelect(category)}
-                        />
-                        {category}
-                    </label>
-                ))}
-            </div>
-            <div>
                 {chapters.map((chapter) => (
                     <button
                         key={chapter}
@@ -192,12 +179,19 @@ function Contents() {
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                 />
-                <input
-                    type="text"
-                    placeholder="Chapter"
-                    value={newChapter}
-                    onChange={(e) => setNewChapter(e.target.value)}
-                />
+                <div>
+                    {chapters.map((chapter) => (
+                        <label key={chapter}>
+                            <input
+                                type="radio"
+                                value={chapter}
+                                checked={selectedCategory === chapter}
+                                onChange={() => setSelectedChapter(chapter)}
+                            />
+                            {chapter}
+                        </label>
+                    ))}
+                </div>
                 <button type="submit">Add</button>
             </form>
         </div>
