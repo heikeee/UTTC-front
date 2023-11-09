@@ -6,6 +6,7 @@ type User = {
     url: string
     category: string
     content: string
+    chapter:string
 }
 
 function Contents() {
@@ -16,6 +17,7 @@ function Contents() {
     const [content, setContent] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [sortAscending, setSortAscending] = useState(true);
+    const [chapter, setChapter] = useState('');
 
     const categories = ['book', 'movie', 'vlog'];
 
@@ -89,6 +91,7 @@ function Contents() {
             setSelectedCategory('');
             setUrl('');
             setContent('');
+            setChapter('');
             setErrorMessage('');
             fetchUsers();
         } catch (error) {
@@ -106,12 +109,12 @@ function Contents() {
             <h1>Sannkou List</h1>
             {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
             <button onClick={toggleSort}>
-                {sortAscending ? 'Sort Ascending' : 'Sort Descending'}
+                {sortAscending ? 'Category Sort Ascending' : 'Category Sort Descending'}
             </button>
             <ul>
                 {users.map((user: User) => (
                     <li key={user.id}>
-                        {user.name}, {user.category}, {user.url}, {user.content}
+                        {user.chapter},{user.name}, {user.category}, {user.url}, {user.content}
                     </li>
                 ))}
             </ul>
