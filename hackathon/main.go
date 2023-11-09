@@ -64,11 +64,15 @@ func init() {
 // ② /userでリクエストされたらnameパラメーターと一致する名前を持つレコードをJSON形式で返す
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set(`Access-Control-Allow-Origin`, "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	w.Header().Set(`Access-Control-Allow-Methods`, "GET,PUT,POST,DELETE,UPDATE,OPTIONS")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	//w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	//w.Header().Set(`Access-Control-Allow-Credentials`, "true")
+	//w.Header().Set(`Access-Control-Allow-Methods`, "GET,PUT,POST,DELETE,UPDATE,OPTIONS")
+	//w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT")
 
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
@@ -131,9 +135,48 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-
 		// データベースにユーザーを保存
 		_, execerr := db.Exec("INSERT INTO user (id,name,url,category,content,chapter) VALUES (?,?,?,?,?,?)", id, user.Name, user.Url, user.Category, user.Content, user.Chapter)
+		if execerr != nil {
+			log.Printf("fail: db.Exec, %v\n", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		bytes, err := json.Marshal(u)
+		if err != nil {
+			log.Printf("fail: json.Marshal, %v\n", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		tx.Commit()
+
+		w.Header().Set("Content-Type", "application/json")
+
+		w.Write(bytes)
+
+		// 成功した場合にはHTTPステータス201 (Created) を返す
+		w.WriteHeader(http.StatusCreated)
+
+	case http.MethodDelete:
+		// POSTメソッドのボディをJSONとして解析
+		var u UserResForHTTPPost
+		decoder := json.NewDecoder(r.Body)
+		if err := decoder.Decode(&u); err != nil {
+			log.Printf("fail: json decode, %v\n", err)
+			http.Error(w, "Bad Request: Invalid JSON", http.StatusBadRequest)
+			return
+		}
+		defer r.Body.Close()
+
+		tx, err := db.Begin()
+		if err != nil {
+			log.Printf("fail: db.Begin, %v\n", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		// データベースにユーザーを保存
+		_, execerr := db.Exec("DELETE FROM user where id = ?", u.Id)
 		if execerr != nil {
 			log.Printf("fail: db.Exec, %v\n", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
