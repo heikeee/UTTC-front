@@ -21,6 +21,7 @@ function Contents() {
     const [selectedChapter, setSelectedChapter] = useState('');
     const [newChapter, setNewChapter] = useState(''); // 追加: 新しい章の入力
     const [newCategory, setNewCategory] = useState('');
+
     const categories = ['book', 'movie', 'vlog'];
     const chapters = ['chapter1', 'chapter2', 'chapter3', 'chapter4', 'chapter5', 'chapter6', 'chapter7'];
 
@@ -67,6 +68,11 @@ function Contents() {
 
     const handleSubmit = async (e: SyntheticEvent) => {
         e.preventDefault();
+
+        if (!categories.includes(selectedCategory) || !chapters.includes(selectedChapter)) {
+            setErrorMessage('Invalid category or chapter selected');
+            return;
+        }
 
         if (!name || !selectedCategory || !url || !content || !newChapter) { // 新しい章のバリデーション追加
             setErrorMessage('Name, category, url, content, and chapter are required');
