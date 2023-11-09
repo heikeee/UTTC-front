@@ -122,6 +122,12 @@ function Contents() {
             <form onSubmit={handleSubmit}>
                 <input
                     type="text"
+                    placeholder="chapter"
+                    value={chapter}
+                    onChange={(e) => setChapter(e.target.value)}
+                />
+                <input
+                    type="text"
                     placeholder="Name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
