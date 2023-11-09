@@ -108,17 +108,10 @@ function Contents() {
             <button onClick={toggleSort}>
                 {sortAscending ? 'Sort Ascending' : 'Sort Descending'}
             </button>
-            <div>
-                {categories.map((category) => (
-                    <button key={category} onClick={() => handleCategorySelect(category)}>
-                        {category}
-                    </button>
-                ))}
-            </div>
             <ul>
                 {users.map((user: User) => (
                     <li key={user.id}>
-                        {user.id}, {user.name}, {user.category}, {user.url}, {user.content}
+                        {user.name}, {user.category}, {user.url}, {user.content}
                     </li>
                 ))}
             </ul>
