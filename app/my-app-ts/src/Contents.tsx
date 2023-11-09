@@ -21,7 +21,7 @@ function Contents() {
     const [selectedChapter, setSelectedChapter] = useState('');
     const [newChapter, setNewChapter] = useState(''); // 追加: 新しい章の入力
     const [newCategory, setNewCategory] = useState('');
-
+    const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
     const categories = ['book', 'movie', 'blog'];
     const chapters = ['chapter1', 'chapter2', 'chapter3', 'chapter4', 'chapter5', 'chapter6', 'chapter7'];
@@ -88,6 +88,54 @@ function Contents() {
         } catch (error) {
             console.error('Error deleting user:', error);
             setErrorMessage('Failed to delete user');
+        }
+    };
+
+    const handleEditUser = (userId: string) => {
+        const selectedUser = users.find((user) => user.id === userId);
+
+        if (selectedUser) {
+            setSelectedUserId(userId);
+            setName(selectedUser.name);
+            setUrl(selectedUser.url);
+            setNewCategory(selectedUser.category);
+            setContent(selectedUser.content);
+            setNewChapter(selectedUser.chapter);
+        }
+    };
+
+
+    const handleUpdateUser = async () => {
+        try {
+            if (!selectedUserId) {
+                throw new Error('No user selected for update');
+            }
+
+            const response = await fetch(`https://utter-front-upqs344voq-uc.a.run.app/user`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name,
+                    url,
+                    category: newCategory,
+                    content,
+                    chapter: newChapter,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update user');
+            }
+
+            setErrorMessage('');
+            setSelectedUserId(null);
+            console.log("updated")
+            await fetchUsers(); // ユーザーの再取得
+        } catch (error) {
+            console.error('Error updating user:', error);
+            setErrorMessage('Failed to update user');
         }
     };
 
@@ -203,10 +251,64 @@ function Contents() {
                 {users.map((user: User) => (
                     <li key={user.id}>
                         {user.chapter}, {user.name}, {user.category}, {user.url}, {user.content}
+                        <button onClick={() => handleEditUser(user.id)}>Edit</button>
                         <button onClick={() => handleDeleteUser(user.id)}>Delete</button>
                     </li>
                 ))}
             </ul>
+            {selectedUserId && (
+                <div>
+                    <h2>Edit User</h2>
+                    <form onSubmit={handleUpdateUser}>
+                        <label>
+                            Name:
+                            <input
+                                type="text"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                            />
+                        </label>
+                        <br />
+                        <label>
+                            Url:
+                            <input
+                                type="text"
+                                value={url}
+                                onChange={(e) => setUrl(e.target.value)}
+                            />
+                        </label>
+                        <br />
+                        <label>
+                            Category:
+                            <input
+                                type="text"
+                                value={newCategory}
+                                onChange={(e) => setNewCategory(e.target.value)}
+                            />
+                        </label>
+                        <br />
+                        <label>
+                            Content:
+                            <input
+                                type="text"
+                                value={content}
+                                onChange={(e) => setContent(e.target.value)}
+                            />
+                        </label>
+                        <br />
+                        <label>
+                            Chapter:
+                            <input
+                                type="text"
+                                value={newChapter}
+                                onChange={(e) => setNewChapter(e.target.value)}
+                            />
+                        </label>
+                        <br />
+                        <button type="submit">Update</button>
+                    </form>
+                </div>
+            )}
             <h2>Add New</h2>
             <form onSubmit={handleSubmit}>
                 <input
