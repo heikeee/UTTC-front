@@ -6,7 +6,7 @@ type User = {
     url: string
     category: string
     content: string
-    chapter:string
+    chapter: string
 }
 
 function Contents() {
@@ -16,13 +16,20 @@ function Contents() {
     const [selectedCategory, setSelectedCategory] = useState('');
     const [content, setContent] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const [sortAscending, setSortAscending] = useState(true);
-    const [chapter, setChapter] = useState('');
+    const [sortAscendingCategory, setSortAscendingCategory] = useState(true);
+    const [sortAscendingChapter, setSortAscendingChapter] = useState(true);
+    const [selectedChapter, setSelectedChapter] = useState('');
+    const [newChapter, setNewChapter] = useState(''); // 追加: 新しい章の入力
 
     const categories = ['book', 'movie', 'vlog'];
+    const chapters = ['chapter1', 'chapter2', 'chapter3', 'chapter4', 'chapter5', 'chapter6', 'chapter7'];
 
     const handleCategorySelect = (category: string) => {
         setSelectedCategory(category);
+    };
+
+    const handleChapterSelect = (chapter: string) => {
+        setSelectedChapter(chapter);
     };
 
     const fetchUsers = async () => {
@@ -38,15 +45,17 @@ function Contents() {
             );
             const data: User[] = await response.json();
 
-            data.sort((a, b) => {
-                if (sortAscending) {
-                    return a.category.localeCompare(b.category);
-                } else {
-                    return b.category.localeCompare(a.category);
-                }
-            });
+            const filteredAndSortedData = data
+                .filter(user => (!selectedCategory || user.category === selectedCategory) && (!selectedChapter || user.chapter === selectedChapter))
+                .sort((a, b) => {
+                    if (sortAscendingCategory) {
+                        return a.category.localeCompare(b.category);
+                    } else {
+                        return b.category.localeCompare(a.category);
+                    }
+                });
 
-            setUsers(data);
+            setUsers(filteredAndSortedData);
         } catch (error) {
             console.log(error);
         }
@@ -54,13 +63,13 @@ function Contents() {
 
     useEffect(() => {
         fetchUsers();
-    }, [sortAscending, selectedCategory]);
+    }, [sortAscendingCategory, selectedCategory, selectedChapter]);
 
     const handleSubmit = async (e: SyntheticEvent) => {
         e.preventDefault();
 
-        if (!name || !selectedCategory || !url || !content) {
-            setErrorMessage('Name, category, url, and content are required');
+        if (!name || !selectedCategory || !url || !content || !newChapter) { // 新しい章のバリデーション追加
+            setErrorMessage('Name, category, url, content, and chapter are required');
             return;
         }
 
@@ -80,7 +89,7 @@ function Contents() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ name, url, category: selectedCategory, content }),
+                body: JSON.stringify({ name, url, category: selectedCategory, content, chapter: newChapter }), // 新しい章をリクエストに含める
             });
 
             if (!response.ok) {
@@ -91,7 +100,8 @@ function Contents() {
             setSelectedCategory('');
             setUrl('');
             setContent('');
-            setChapter('');
+            setSelectedChapter('');
+            setNewChapter('');
             setErrorMessage('');
             fetchUsers();
         } catch (error) {
@@ -100,32 +110,57 @@ function Contents() {
         }
     };
 
-    const toggleSort = () => {
-        setSortAscending(!sortAscending);
+    const toggleSortCategory = () => {
+        setSortAscendingCategory(!sortAscendingCategory);
+    };
+
+    const toggleSortChapter = () => {
+        setSortAscendingChapter(!sortAscendingChapter);
     };
 
     return (
         <div className="App">
             <h1>Sannkou List</h1>
             {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-            <button onClick={toggleSort}>
-                {sortAscending ? 'Category Sort Ascending' : 'Category Sort Descending'}
+            <button onClick={toggleSortCategory}>
+                {sortAscendingCategory ? 'Category Sort Ascending' : 'Category Sort Descending'}
             </button>
+            <button onClick={toggleSortChapter}>
+                {sortAscendingChapter ? 'Chapter Sort Ascending' : 'Chapter Sort Descending'}
+            </button>
+            <div>
+                {categories.map((category) => (
+                    <label key={category}>
+                        <input
+                            type="radio"
+                            value={category}
+                            checked={selectedCategory === category}
+                            onChange={() => handleCategorySelect(category)}
+                        />
+                        {category}
+                    </label>
+                ))}
+            </div>
+            <div>
+                {chapters.map((chapter) => (
+                    <button
+                        key={chapter}
+                        onClick={() => handleChapterSelect(chapter)}
+                        style={selectedChapter === chapter ? { fontWeight: 'bold' } : {}}
+                    >
+                        {chapter}
+                    </button>
+                ))}
+            </div>
             <ul>
                 {users.map((user: User) => (
                     <li key={user.id}>
-                        {user.chapter},{user.name}, {user.category}, {user.url}, {user.content}
+                        {user.chapter}, {user.name}, {user.category}, {user.url}, {user.content}
                     </li>
                 ))}
             </ul>
             <h2>Add New</h2>
             <form onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    placeholder="chapter"
-                    value={chapter}
-                    onChange={(e) => setChapter(e.target.value)}
-                />
                 <input
                     type="text"
                     placeholder="Name"
@@ -157,6 +192,12 @@ function Contents() {
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                 />
+                <input
+                    type="text"
+                    placeholder="Chapter"
+                    value={newChapter}
+                    onChange={(e) => setNewChapter(e.target.value)}
+                />
                 <button type="submit">Add</button>
             </form>
         </div>
@@ -164,6 +205,8 @@ function Contents() {
 }
 
 export default Contents;
+
+
 
 /*
 import React, { useState, useEffect, SyntheticEvent } from 'react';
