@@ -198,6 +198,47 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		// 成功した場合にはHTTPステータス201 (Created) を返す
 		w.WriteHeader(http.StatusCreated)
 
+	case http.MethodPut:
+
+		var user UserResForHTTPGet
+		var u UserResForHTTPPost
+		decoder := json.NewDecoder(r.Body)
+		if err := decoder.Decode(&user); err != nil {
+			log.Printf("fail: json decode, %v\n", err)
+			http.Error(w, "Bad Request: Invalid JSON", http.StatusBadRequest)
+			return
+		}
+		defer r.Body.Close()
+
+		tx, err := db.Begin()
+		if err != nil {
+			log.Printf("fail: db.Begin, %v\n", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		// データベースにユーザーを保存
+		_, execerr := db.Exec("UPDATE user SET name=?,url=?,category=?,content=?,chapter=? WHERE id = ?", user.Name, user.Url, user.Category, user.Content, user.Chapter, user.Id)
+		if execerr != nil {
+			log.Printf("fail: db.Exec, %v\n", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		bytes, err := json.Marshal(u)
+		if err != nil {
+			log.Printf("fail: json.Marshal, %v\n", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		tx.Commit()
+
+		w.Header().Set("Content-Type", "application/json")
+
+		w.Write(bytes)
+
+		// 成功した場合にはHTTPステータス201 (Created) を返す
+		w.WriteHeader(http.StatusCreated)
+
 	default:
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return

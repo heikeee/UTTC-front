@@ -48,10 +48,7 @@ function Contents() {
             const data: User[] = await response.json();
 
             const filteredAndSortedData = data
-                //.filter(user => (!selectedCategory || user.category === selectedCategory) && (!selectedChapter || user.chapter === selectedChapter))
-                .filter(user => {
-                    return user.chapter === selectedChapter || !selectedChapter
-                })
+                .filter(user => (!selectedCategory || user.category === selectedCategory) && (!selectedChapter || user.chapter === selectedChapter))
                 .sort((a, b) => {
                     if (sortAscendingCategory) {
                         return a.category.localeCompare(b.category);
