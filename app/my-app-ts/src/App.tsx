@@ -22,7 +22,7 @@ const App = () => {
             <LoginForm />
             {/* ログインしていないと見られないコンテンツは、loginUserがnullの場合表示しない */}
             {loginUser ? <Contents /> : null}
-            {loginUser ? <UserComponent /> :null}
+            {/*{loginUser ? <UserComponent /> :null}*/}
         </>
     );
 };
