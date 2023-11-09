@@ -12,12 +12,17 @@ function Contents() {
     const [users, setUsers] = useState<User[]>([]);
     const [name, setName] = useState('');
     const [url, setUrl] = useState('');
-    const [category, setCategory] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('');
     const [content, setContent] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const [sortAscending, setSortAscending] = useState(true); // 追加: ソート順
+    const [sortAscending, setSortAscending] = useState(true);
 
-    // サーバーからユーザー一覧を取得する関数
+    const categories = ['book', 'movie', 'vlog'];
+
+    const handleCategorySelect = (category: string) => {
+        setSelectedCategory(category);
+    };
+
     const fetchUsers = async () => {
         try {
             const response = await fetch(
@@ -31,7 +36,6 @@ function Contents() {
             );
             const data: User[] = await response.json();
 
-            // ソート
             data.sort((a, b) => {
                 if (sortAscending) {
                     return a.category.localeCompare(b.category);
@@ -46,28 +50,25 @@ function Contents() {
         }
     };
 
-    // アプリの初期化時にユーザー一覧を取得
     useEffect(() => {
         fetchUsers();
-    }, []);
+    }, [sortAscending, selectedCategory]);
 
-    // フォームを送信して新しいユーザーをサーバーに保存する関数
     const handleSubmit = async (e: SyntheticEvent) => {
         e.preventDefault();
 
-        // バリデーション
-        if (!name || !category || !url || !content) {
-            setErrorMessage('Name age url content are required');
+        if (!name || !selectedCategory || !url || !content) {
+            setErrorMessage('Name, category, url, and content are required');
             return;
         }
 
         if (!name) {
-            alert("Please enter name");
+            setErrorMessage('Please enter name');
             return;
         }
 
         if (name.length > 50) {
-            alert("Please enter a name shorter than 50 characters");
+            setErrorMessage('Please enter a name shorter than 50 characters');
             return;
         }
 
@@ -77,16 +78,15 @@ function Contents() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ name, url, category, content }),
+                body: JSON.stringify({ name, url, category: selectedCategory, content }),
             });
 
             if (!response.ok) {
                 throw new Error('Failed to create user');
             }
 
-            // フォームをクリアしてユーザー一覧を更新
             setName('');
-            setCategory('');
+            setSelectedCategory('');
             setUrl('');
             setContent('');
             setErrorMessage('');
@@ -97,11 +97,8 @@ function Contents() {
         }
     };
 
-    // ソート順を切り替える関数
     const toggleSort = () => {
         setSortAscending(!sortAscending);
-        // ユーザーを再度ソート
-        fetchUsers();
     };
 
     return (
@@ -109,8 +106,15 @@ function Contents() {
             <h1>Sannkou List</h1>
             {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
             <button onClick={toggleSort}>
-                {sortAscending ? 'Sort アイテム' : 'Sort アイテム'}
+                {sortAscending ? 'Sort Ascending' : 'Sort Descending'}
             </button>
+            <div>
+                {categories.map((category) => (
+                    <button key={category} onClick={() => handleCategorySelect(category)}>
+                        {category}
+                    </button>
+                ))}
+            </div>
             <ul>
                 {users.map((user: User) => (
                     <li key={user.id}>
@@ -126,12 +130,19 @@ function Contents() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                 />
-                <input
-                    type="text"
-                    placeholder="Category"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                />
+                <div>
+                    {categories.map((category) => (
+                        <label key={category}>
+                            <input
+                                type="radio"
+                                value={category}
+                                checked={selectedCategory === category}
+                                onChange={() => setSelectedCategory(category)}
+                            />
+                            {category}
+                        </label>
+                    ))}
+                </div>
                 <input
                     type="text"
                     placeholder="Url"
@@ -151,143 +162,144 @@ function Contents() {
 }
 
 export default Contents;
+
 /*
 import React, { useState, useEffect, SyntheticEvent } from 'react';
 
 type User = {
-    id: string
-    name: string
-    url: string
-    category: string
-    content: string
+id: string
+name: string
+url: string
+category: string
+content: string
 }
 
 function Contents() {
-    const [users, setUsers] = useState<User[]>([]);
-    const [name, setName] = useState('');
-    const [url, setUrl] = useState('');
-    const [category, setCategory] = useState('');
-    const [content, setContent] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
+const [users, setUsers] = useState<User[]>([]);
+const [name, setName] = useState('');
+const [url, setUrl] = useState('');
+const [category, setCategory] = useState('');
+const [content, setContent] = useState('');
+const [errorMessage, setErrorMessage] = useState('');
 
-    // サーバーからユーザー一覧を取得する関数
-    const fetchUsers = async () => {
-        try {
-            const response = await fetch(
-                'https://utter-front-upqs344voq-uc.a.run.app/user',
-                {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                }
-            );
-            /*if (!response.ok) {
-                throw new Error('Failed to fetch users');
-            }
+// サーバーからユーザー一覧を取得する関数
+const fetchUsers = async () => {
+try {
+const response = await fetch(
+    'https://utter-front-upqs344voq-uc.a.run.app/user',
+    {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }
+);
+/*if (!response.ok) {
+    throw new Error('Failed to fetch users');
+}
 const data:User[] = await response.json();
 setUsers(data);
 } catch (error) {
-    // console.error('Error fetching users:', error);
-    // setErrorMessage('Failed to fetch users');
-    console.log(error)
+// console.error('Error fetching users:', error);
+// setErrorMessage('Failed to fetch users');
+console.log(error)
 }
 };
 
 // アプリの初期化時にユーザー一覧を取得
 useEffect(() => {
-    fetchUsers();
-    console.log(users)
+fetchUsers();
+console.log(users)
 }, []);
 
 // フォームを送信して新しいユーザーをサーバーに保存する関数
 const handleSubmit = async (e: SyntheticEvent) => {
-    e.preventDefault();
+e.preventDefault();
 
-    // バリデーション
-    if (!name || !category || !url) {
-        setErrorMessage('Name and age are required');
-        return;
-    }
+// バリデーション
+if (!name || !category || !url) {
+setErrorMessage('Name and age are required');
+return;
+}
 
-    if (!name) {
-        alert("Please enter name");
-        return;
-    }
+if (!name) {
+alert("Please enter name");
+return;
+}
 
-    if (name.length > 50) {
-        alert("Please enter a name shorter than 50 characters");
-        return;
-    }
+if (name.length > 50) {
+alert("Please enter a name shorter than 50 characters");
+return;
+}
 
 
-    try {
-        const response = await fetch('https://utter-front-upqs344voq-uc.a.run.app/user', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ name:name, url:url, category:category, content:content }),
-        });
+try {
+const response = await fetch('https://utter-front-upqs344voq-uc.a.run.app/user', {
+method: 'POST',
+headers: {
+    'Content-Type': 'application/json',
+},
+body: JSON.stringify({ name:name, url:url, category:category, content:content }),
+});
 
-        if (!response.ok) {
-            throw new Error('Failed to create user');
-        }
+if (!response.ok) {
+throw new Error('Failed to create user');
+}
 
-        // フォームをクリアしてユーザー一覧を更新
-        setName('');
-        setCategory('');
-        setUrl('');
-        setContent('');
-        setErrorMessage('');
-        fetchUsers();
-    } catch (error) {
-        console.error('Error creating user:', error);
-        setErrorMessage('Failed to create user');
-    }
+// フォームをクリアしてユーザー一覧を更新
+setName('');
+setCategory('');
+setUrl('');
+setContent('');
+setErrorMessage('');
+fetchUsers();
+} catch (error) {
+console.error('Error creating user:', error);
+setErrorMessage('Failed to create user');
+}
 };
 
 return (
-    <div className="App">
-        <h1>Sannkou List</h1>
-        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-        <ul>
-            {users.map((user: User) => (
-                <li key={user.id}>
-                    {user.id},{user.name},{user.category},{user.url},{user.content}
-                </li>
-            ))}
-        </ul>
-        <h2>Add New</h2>
-        <form onSubmit={handleSubmit}>
-            <input
-                type="text"
-                placeholder="Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-            />
-            <input
-                type="text"
-                placeholder="Category"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-            />
-            <input
-                type="text"
-                placeholder="Url"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-            />
-            <input
-                type="text"
-                placeholder="Content"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-            />
-            <button type="submit">Add </button>
-        </form>
-    </div>
+<div className="App">
+<h1>Sannkou List</h1>
+{errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+<ul>
+{users.map((user: User) => (
+    <li key={user.id}>
+        {user.id},{user.name},{user.category},{user.url},{user.content}
+    </li>
+))}
+</ul>
+<h2>Add New</h2>
+<form onSubmit={handleSubmit}>
+<input
+    type="text"
+    placeholder="Name"
+    value={name}
+    onChange={(e) => setName(e.target.value)}
+/>
+<input
+    type="text"
+    placeholder="Category"
+    value={category}
+    onChange={(e) => setCategory(e.target.value)}
+/>
+<input
+    type="text"
+    placeholder="Url"
+    value={url}
+    onChange={(e) => setUrl(e.target.value)}
+/>
+<input
+    type="text"
+    placeholder="Content"
+    value={content}
+    onChange={(e) => setContent(e.target.value)}
+/>
+<button type="submit">Add </button>
+</form>
+</div>
 );
 }
 export default Contents;
- */
+*/
