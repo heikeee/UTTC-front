@@ -60,11 +60,11 @@ function Contents() {
                      }
                  })
 
-                .sort((a, b) => {
+                .sort((c, d) => {
                     if (sortAscendingnewId) {
-                        return a.newId.localeCompare(b.newId);
+                        return c.newId.localeCompare(d.newId);
                     } else {
-                        return b.newId.localeCompare(a.newId);
+                        return c.newId.localeCompare(d.newId);
                     }
                 });
 
@@ -236,7 +236,7 @@ function Contents() {
                 {sortAscendingid ? 'date Sort Ascending' : 'date Sort Descending'}
             </button>
             <button onClick={toggleSortnewId}>
-                {sortAscendingid ? 'edit date Sort Ascending' : 'edit date Sort Descending'}
+                {sortAscendingnewId ? 'edit date Sort Ascending' : 'edit date Sort Descending'}
             </button>
             {/*<div>*/}
             {/*    {categories.map((category) => (*/}
