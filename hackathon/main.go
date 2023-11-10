@@ -16,12 +16,12 @@ import (
 
 type UserResForHTTPGet struct {
 	Id       string `json:"id"`
-	NewId    string `json:"newId"`
 	Chapter  string `json:"chapter"`
 	Name     string `json:"name"`
 	Url      string `json:"url"`
 	Category string `json:"category"`
 	Content  string `json:"content"`
+	NewId    string `json:"newId"`
 }
 
 type User struct {
@@ -94,7 +94,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		users := make([]UserResForHTTPGet, 0)
 		for rows.Next() {
 			var u UserResForHTTPGet
-			if err := rows.Scan(&u.Id, &u.NewId, &u.Name, &u.Category, &u.Url, &u.Content, &u.Chapter); err != nil {
+			if err := rows.Scan(&u.Id, &u.Name, &u.Category, &u.Url, &u.Content, &u.Chapter, &u.NewId); err != nil {
 				log.Printf("fail: rows.Scan, %v\n", err)
 
 				if err := rows.Close(); err != nil { // 500を返して終了するが、その前にrowsのClose処理が必要
@@ -138,7 +138,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		// データベースにユーザーを保存
-		_, execerr := db.Exec("INSERT INTO user (id,newid,name,url,category,content,chapter) VALUES (?,?,?,?,?,?,?)", id, newId, user.Name, user.Url, user.Category, user.Content, user.Chapter)
+		_, execerr := db.Exec("INSERT INTO user (id,name,url,category,content,chapter,newid) VALUES (?,?,?,?,?,?,?)", id, user.Name, user.Url, user.Category, user.Content, user.Chapter, newId)
 		if execerr != nil {
 			log.Printf("fail: db.Exec, %v\n", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)

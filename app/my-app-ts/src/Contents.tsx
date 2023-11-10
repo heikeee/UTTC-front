@@ -2,6 +2,7 @@ import React, { useState, useEffect, SyntheticEvent } from 'react';
 
 type User = {
     id: string
+    newid: string
     name: string
     url: string
     category: string
@@ -11,7 +12,7 @@ type User = {
 
 function Contents() {
     const [users, setUsers] = useState<User[]>([]);
-    //const [id, setid] = useState('');
+    //const [newid, setnewid] = useState('');
     const [name, setName] = useState('');
     const [url, setUrl] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
@@ -208,9 +209,6 @@ function Contents() {
         setSortAscendingid(!sortAscendingid);
     };
 
-    const toggleSortChapter = () => {
-        setSortAscendingChapter(!sortAscendingChapter);
-    };
 
     return (
         <div className="App">
