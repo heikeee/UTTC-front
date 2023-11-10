@@ -77,7 +77,7 @@ function Contents() {
 
     useEffect(() => {
         fetchUsers();
-    }, [sortAscendingnewId,sortAscendingid,selectedCategory, selectedChapter]);
+    }, [sortAscendingid,sortAscendingnewId,selectedCategory, selectedChapter]);
 // [ sortAscendingCategory,selectedCategory, selectedChapter]);
 
     const handleDeleteUser = async (userId: string) => {
