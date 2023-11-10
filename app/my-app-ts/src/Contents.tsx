@@ -11,12 +11,13 @@ type User = {
 
 function Contents() {
     const [users, setUsers] = useState<User[]>([]);
+    //const [id, setid] = useState('');
     const [name, setName] = useState('');
     const [url, setUrl] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
     const [content, setContent] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const [sortAscendingCategory, setSortAscendingCategory] = useState(true);
+    const [sortAscendingid, setSortAscendingid] = useState(true);
     const [sortAscendingChapter, setSortAscendingChapter] = useState(true);
     const [selectedChapter, setSelectedChapter] = useState('');
     const [newChapter, setNewChapter] = useState(''); // 追加: 新しい章の入力
@@ -50,12 +51,12 @@ function Contents() {
             const filteredAndSortedData = data
                 .filter(user => (!selectedCategory || user.category === selectedCategory) && (!selectedChapter || user.chapter === selectedChapter))
                 .sort((a, b) => {
-                    if (sortAscendingCategory) {
-                        return a.category.localeCompare(b.category);
-                    } else {
-                        return b.category.localeCompare(a.category);
-                    }
-                });
+                     if (sortAscendingid) {
+                         return a.id.localeCompare(b.id);
+                     } else {
+                         return b.id.localeCompare(a.id);
+                     }
+                 });
 
             setUsers(filteredAndSortedData);
         } catch (error) {
@@ -65,7 +66,7 @@ function Contents() {
 
     useEffect(() => {
         fetchUsers();
-    }, [sortAscendingCategory,selectedCategory, selectedChapter]);
+    }, [sortAscendingid,selectedCategory, selectedChapter]);
 // [ sortAscendingCategory,selectedCategory, selectedChapter]);
 
     const handleDeleteUser = async (userId: string) => {
@@ -105,11 +106,20 @@ function Contents() {
     };
 
 
-    const handleUpdateUser = async () => {
+    const handleUpdateUser = async (e: React.FormEvent<HTMLElement>) => {
+        e.preventDefault()
+        console.log(selectedUserId)
+        console.log(name)
+        console.log(url)
+        console.log(newCategory)
+        console.log(content)
+        console.log(newChapter)
         try {
             if (!selectedUserId) {
                 throw new Error('No user selected for update');
             }
+
+            console.log("PUT")
 
             const response = await fetch(`https://utter-front-upqs344voq-uc.a.run.app/user`, {
                 method: 'PUT',
@@ -117,10 +127,11 @@ function Contents() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    name,
-                    url,
+                    id: selectedUserId,
+                    name: name,
+                    url: url,
                     category: newCategory,
-                    content,
+                    content: content,
                     chapter: newChapter,
                 }),
             });
@@ -193,8 +204,8 @@ function Contents() {
         }
     };
 
-    const toggleSortCategory = () => {
-        setSortAscendingCategory(!sortAscendingCategory);
+    const toggleSortid = () => {
+        setSortAscendingid(!sortAscendingid);
     };
 
     const toggleSortChapter = () => {
@@ -205,11 +216,8 @@ function Contents() {
         <div className="App">
             <h1>Sannkou List</h1>
             {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-            <button onClick={toggleSortCategory}>
-                {sortAscendingCategory ? 'Category Sort Ascending' : 'Category Sort Descending'}
-            </button>
-            <button onClick={toggleSortChapter}>
-                {sortAscendingChapter ? 'Chapter Sort Ascending' : 'Chapter Sort Descending'}
+            <button onClick={toggleSortid}>
+                {sortAscendingid ? 'date Sort Ascending' : 'date Sort Descending'}
             </button>
             {/*<div>*/}
             {/*    {categories.map((category) => (*/}
@@ -259,7 +267,7 @@ function Contents() {
             {selectedUserId && (
                 <div>
                     <h2>Edit User</h2>
-                    <form onSubmit={handleUpdateUser}>
+                    <form onSubmit={(e)=>handleUpdateUser(e)}>
                         <label>
                             Name:
                             <input

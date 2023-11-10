@@ -16,6 +16,7 @@ import (
 
 type UserResForHTTPGet struct {
 	Id       string `json:"id"`
+	newId	 string `json:"newid"`
 	Chapter  string `json:"chapter"`
 	Name     string `json:"name"`
 	Url      string `json:"url"`
@@ -93,7 +94,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		users := make([]UserResForHTTPGet, 0)
 		for rows.Next() {
 			var u UserResForHTTPGet
-			if err := rows.Scan(&u.Id, &u.Name, &u.Category, &u.Url, &u.Content, &u.Chapter); err != nil {
+			if err := rows.Scan(&u.Id,&u.newId, &u.Name, &u.Category, &u.Url, &u.Content, &u.Chapter); err != nil {
 				log.Printf("fail: rows.Scan, %v\n", err)
 
 				if err := rows.Close(); err != nil { // 500を返して終了するが、その前にrowsのClose処理が必要
@@ -118,6 +119,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 		// POSTメソッドのボディをJSONとして解析
 		id := ulid.Make().String()
+		newId := ulid.Make().String()
 		var user UserResForHTTPGet
 		var u UserResForHTTPPost
 		u.Id = id
@@ -136,7 +138,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		// データベースにユーザーを保存
-		_, execerr := db.Exec("INSERT INTO user (id,name,url,category,content,chapter) VALUES (?,?,?,?,?,?)", id, user.Name, user.Url, user.Category, user.Content, user.Chapter)
+		_, execerr := db.Exec("INSERT INTO user (id,newid,name,url,category,content,chapter) VALUES (?,?,?,?,?,?,?)", id,newId, user.Name, user.Url, user.Category, user.Content, user.Chapter)
 		if execerr != nil {
 			log.Printf("fail: db.Exec, %v\n", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -216,7 +218,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		// データベースにユーザーを保存
-		_, execerr := db.Exec("UPDATE user SET name=?,url=?,category=?,content=?,chapter=? WHERE id = ?", user.Name, user.Url, user.Category, user.Content, user.Chapter, user.Id)
+		_, execerr := db.Exec("UPDATE user SET name=?,url=?,category=?,content=?,chapter=?,newid = ? WHERE id = ?", user.Name, user.Url, user.Category, user.Content, user.Chapter,user.newId, user.Id)
 		if execerr != nil {
 			log.Printf("fail: db.Exec, %v\n", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
