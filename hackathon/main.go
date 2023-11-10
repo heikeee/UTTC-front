@@ -31,6 +31,7 @@ type User struct {
 	Category string `json:"category"`
 	Content  string `json:"content"`
 	Chapter  string `json:"chapter"`
+	newId	 string `json:"newid"`
 }
 
 type UserResForHTTPPost struct {
