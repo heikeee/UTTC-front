@@ -1,4 +1,5 @@
 import React, { useState, useEffect, SyntheticEvent } from 'react';
+import {ulid} from 'ulid';
 
 type User = {
     id: string
@@ -12,14 +13,14 @@ type User = {
 
 function Contents() {
     const [users, setUsers] = useState<User[]>([]);
-    //const [newid, setnewid] = useState('');
     const [name, setName] = useState('');
+    const [newId, setNewId] = useState('');
     const [url, setUrl] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
     const [content, setContent] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [sortAscendingid, setSortAscendingid] = useState(true);
-    const [sortAscendingChapter, setSortAscendingChapter] = useState(true);
+    const [sortAscendingnewId, setSortAscendingnewId] = useState(true);
     const [selectedChapter, setSelectedChapter] = useState('');
     const [newChapter, setNewChapter] = useState(''); // 追加: 新しい章の入力
     const [newCategory, setNewCategory] = useState('');
@@ -57,7 +58,16 @@ function Contents() {
                      } else {
                          return b.id.localeCompare(a.id);
                      }
-                 });
+                 })
+
+                .sort((a, b) => {
+                    if (sortAscendingnewId) {
+                        return a.newId.localeCompare(b.newId);
+                    } else {
+                        return b.newId.localeCompare(a.newId);
+                    }
+                });
+
 
             setUsers(filteredAndSortedData);
         } catch (error) {
@@ -67,7 +77,7 @@ function Contents() {
 
     useEffect(() => {
         fetchUsers();
-    }, [sortAscendingid,selectedCategory, selectedChapter]);
+    }, [sortAscendingnewId,sortAscendingid,selectedCategory, selectedChapter]);
 // [ sortAscendingCategory,selectedCategory, selectedChapter]);
 
     const handleDeleteUser = async (userId: string) => {
@@ -103,6 +113,8 @@ function Contents() {
             setNewCategory(selectedUser.category);
             setContent(selectedUser.content);
             setNewChapter(selectedUser.chapter);
+            const newUlid = ulid();
+            setNewId(newUlid);
         }
     };
 
@@ -134,6 +146,7 @@ function Contents() {
                     category: newCategory,
                     content: content,
                     chapter: newChapter,
+                    newId:newId,
                 }),
             });
 
@@ -209,6 +222,11 @@ function Contents() {
         setSortAscendingid(!sortAscendingid);
     };
 
+    const toggleSortnewId = () => {
+        setSortAscendingnewId(!sortAscendingnewId);
+    };
+
+
 
     return (
         <div className="App">
@@ -216,6 +234,9 @@ function Contents() {
             {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
             <button onClick={toggleSortid}>
                 {sortAscendingid ? 'date Sort Ascending' : 'date Sort Descending'}
+            </button>
+            <button onClick={toggleSortnewId}>
+                {sortAscendingid ? 'edit date Sort Ascending' : 'edit date Sort Descending'}
             </button>
             {/*<div>*/}
             {/*    {categories.map((category) => (*/}
