@@ -60,11 +60,11 @@ function Contents() {
                      }
                  })
 
-                .sort((a, b) => {
+                .sort((c, d) => {
                     if (sortAscendingnewId) {
-                        return a.newId.localeCompare(b.newId);
+                        return c.newId.localeCompare(d.newId);
                     } else {
-                        return b.newId.localeCompare(a.newId);
+                        return c.newId.localeCompare(d.newId);
                     }
                 });
 
