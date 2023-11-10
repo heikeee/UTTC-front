@@ -16,7 +16,7 @@ import (
 
 type UserResForHTTPGet struct {
 	Id       string `json:"id"`
-	NewId    string `json:"newid"`
+	NewId    string `json:"newId"`
 	Chapter  string `json:"chapter"`
 	Name     string `json:"name"`
 	Url      string `json:"url"`
@@ -31,7 +31,6 @@ type User struct {
 	Category string `json:"category"`
 	Content  string `json:"content"`
 	Chapter  string `json:"chapter"`
-	newId    string `json:"newid"`
 }
 
 type UserResForHTTPPost struct {
