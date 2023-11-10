@@ -2,12 +2,12 @@ import React, { useState, useEffect, SyntheticEvent } from 'react';
 
 type User = {
     id: string
-    newid: string
     name: string
     url: string
     category: string
     content: string
     chapter: string
+    newId: string
 }
 
 function Contents() {
