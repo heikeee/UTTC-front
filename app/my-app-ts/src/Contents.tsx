@@ -236,7 +236,7 @@ function Contents() {
                 {sortAscendingid ? 'date Sort Ascending' : 'date Sort Descending'}
             </button>
             <button onClick={toggleSortnewId}>
-                {sortAscendingid ? 'edit date Sort Ascending' : 'edit date Sort Descending'}
+                {sortAscendingnewId ? 'edit date Sort Ascending' : 'edit date Sort Descending'}
             </button>
             {/*<div>*/}
             {/*    {categories.map((category) => (*/}
