@@ -94,7 +94,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		users := make([]UserResForHTTPGet, 0)
 		for rows.Next() {
 			var u UserResForHTTPGet
-			if err := rows.Scan(&u.Id, &u.Name, &u.Category, &u.Url, &u.Content, &u.Chapter, &u.NewId); err != nil {
+			if err := rows.Scan(&u.Id, &u.NewId, &u.Name, &u.Category, &u.Url, &u.Content, &u.Chapter); err != nil {
 				log.Printf("fail: rows.Scan, %v\n", err)
 
 				if err := rows.Close(); err != nil { // 500を返して終了するが、その前にrowsのClose処理が必要
