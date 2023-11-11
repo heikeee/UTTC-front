@@ -20,7 +20,7 @@ function Contents() {
     const [content, setContent] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [sortAscendingid, setSortAscendingid] = useState(true);
-    const [sortAscendingnewId, setSortAscendingnewId] = useState(true);
+    const [sortAscendingnewId, setSortAscendingnewId] = useState(false);
     const [selectedChapter, setSelectedChapter] = useState('');
     const [newChapter, setNewChapter] = useState(''); // 追加: 新しい章の入力
     const [newCategory, setNewCategory] = useState('');
@@ -53,20 +53,20 @@ function Contents() {
             const filteredAndSortedData = data
                 .filter(user => (!selectedCategory || user.category === selectedCategory) && (!selectedChapter || user.chapter === selectedChapter))
                 .sort((a, b) => {
-                     if (sortAscendingid) {
-                         return a.id.localeCompare(b.id);
-                     } else {
-                         return b.id.localeCompare(a.id);
-                     }
-                 })
-
-                .sort((a, b) => {
-                    if (sortAscendingnewId) {
+                    if (sortAscendingid) {
+                        // idを昇順でソート
+                        return a.id.localeCompare(b.id);
+                    } else if (sortAscendingnewId) {
+                        // newidを昇順でソート
                         return a.newId.localeCompare(b.newId);
                     } else {
-                        return a.newId.localeCompare(b.newId);
+                        // デフォルトはidを昇順でソート
+                        return a.id.localeCompare(b.id);
                     }
-                });
+                 })
+
+
+
 
 
             setUsers(filteredAndSortedData);
@@ -220,10 +220,12 @@ function Contents() {
 
     const toggleSortid = () => {
         setSortAscendingid(!sortAscendingid);
+        setSortAscendingnewId(false);
     };
 
     const toggleSortnewId = () => {
         setSortAscendingnewId(!sortAscendingnewId);
+        setSortAscendingid(false);
     };
 
 
@@ -238,19 +240,6 @@ function Contents() {
             <button onClick={toggleSortnewId}>
                 {sortAscendingnewId ? 'edit date Sort Ascending' : 'edit date Sort Descending'}
             </button>
-            {/*<div>*/}
-            {/*    {categories.map((category) => (*/}
-            {/*        <label key={category}>*/}
-            {/*            <input*/}
-            {/*                key={category}*/}
-            {/*                checked={selectedCategory === category}*/}
-            {/*                onChange={() => handleCategorySelect(category)}*/}
-            {/*                style={selectedCategory === category ? { fontWeight: 'bold' } : {}}*/}
-            {/*            />*/}
-            {/*            {category}*/}
-            {/*        </label>*/}
-            {/*    ))}*/}
-            {/*</div>*/}
             <div>
                 {categories.map((category) => (
                         <button
