@@ -27,7 +27,7 @@ function Contents() {
     const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
     const categories = ['book', 'movie', 'blog'];
-    const chapters = ['chapter1', 'chapter2', 'chapter3', 'chapter4', 'chapter5', 'chapter6', 'chapter7'];
+    const chapters = ['Web App Deep Dive', 'The History of Web', 'エディタ (IDE)', 'OSコマンド（とシェル）', 'Git', 'GitHub', 'HTML & CSS','JavaScript','React','React x Typescript','SQL','Docker','Go'];
 
     const handleCategorySelect = (category: string) => {
         setSelectedCategory(category);
@@ -235,10 +235,10 @@ function Contents() {
             <h1>Sannkou List</h1>
             {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
             <button onClick={toggleSortid}>
-                {sortAscendingid ? 'date Sort Ascending' : 'date Sort Descending'}
+                {sortAscendingid ? 'date Sort Ascending' : 'date Sort Ascending'}
             </button>
             <button onClick={toggleSortnewId}>
-                {sortAscendingnewId ? 'edit date Sort Ascending' : 'edit date Sort Descending'}
+                {sortAscendingnewId ? 'edit date Sort Ascending' : 'edit date Sort Ascending'}
             </button>
             <div>
                 {categories.map((category) => (
