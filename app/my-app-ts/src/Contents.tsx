@@ -1,5 +1,5 @@
 import React, { useState, useEffect, SyntheticEvent } from 'react';
-//import {ulid} from 'ulid';
+import {ulid} from 'ulid';
 
 type User = {
     id: string
@@ -133,8 +133,8 @@ function Contents() {
             setNewCategory(selectedUser.category);
             setContent(selectedUser.content);
             setNewChapter(selectedUser.chapter);
-            //const newUlid = ulid();
-            //setNewId(newUlid);
+            const newUlid = ulid();
+            setNewId(newUlid);
         }
     };
 
