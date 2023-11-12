@@ -1,5 +1,5 @@
 import React, { useState, useEffect, SyntheticEvent } from 'react';
-import {ulid} from 'ulid';
+//import {ulid} from 'ulid';
 
 type User = {
     id: string
@@ -25,6 +25,9 @@ function Contents() {
     const [newChapter, setNewChapter] = useState(''); // 追加: 新しい章の入力
     const [newCategory, setNewCategory] = useState('');
     const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+    const [selectedUserDetails, setSelectedUserDetails] = useState<User | null>(null);
+    const [DetailsVisible, setDetailsVisible] = useState(false);
+   
 
     const categories = ['book', 'movie', 'blog'];
     const chapters = ['Web App Deep Dive', 'The History of Web', 'エディタ (IDE)', 'OSコマンド（とシェル）', 'Git', 'GitHub', 'HTML & CSS','JavaScript','React','React x Typescript','SQL','Docker','Go'];
@@ -36,6 +39,23 @@ function Contents() {
     const handleChapterSelect = (chapter: string) => {
         setSelectedChapter(chapter);
     };
+    const handleDetailsClick = (userId: string) => {
+        const selectedUser = users.find((user) => user.id === userId);
+    
+        if (selectedUser) {
+            // setDetailsVisible(true);
+            setSelectedUserDetails(selectedUser);
+        }
+        
+    };
+
+    const handleBackButtonClick = () => {
+            setSelectedUserDetails(null);
+            // setDetailsVisible(false);
+    };
+
+    const isDetailsVisible = (userId: string) => selectedUserDetails?.id === userId;
+
 
     const fetchUsers = async () => {
         try {
@@ -113,8 +133,8 @@ function Contents() {
             setNewCategory(selectedUser.category);
             setContent(selectedUser.content);
             setNewChapter(selectedUser.chapter);
-            const newUlid = ulid();
-            setNewId(newUlid);
+            //const newUlid = ulid();
+            //setNewId(newUlid);
         }
     };
 
@@ -229,11 +249,13 @@ function Contents() {
     };
 
 
+    
 
     return (
         <div className="App">
             <h1>Sannkou List</h1>
             {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+
             <button onClick={toggleSortid}>
                 {sortAscendingid ? 'date Sort Ascending' : 'date Sort Ascending'}
             </button>
@@ -266,9 +288,22 @@ function Contents() {
             <ul>
                 {users.map((user: User) => (
                     <li key={user.id}>
-                        {user.chapter}, {user.name}, {user.category}, {user.url}, {user.content}
+                        {user.chapter}, {user.name}
                         <button onClick={() => handleEditUser(user.id)}>Edit</button>
                         <button onClick={() => handleDeleteUser(user.id)}>Delete</button>
+                        <button onClick={() => handleDetailsClick(user.id)}>Details</button>
+
+                        {/* 詳細が表示されている場合は詳細情報を表示 */}
+                        {isDetailsVisible(user.id) && (
+                            <div>
+                                <p>category: {user.category}</p>
+                                <p>url: {user.url}</p>
+                                <p>content: {user.content}</p>
+                                <button onClick={handleBackButtonClick}>Back</button>
+
+                                {/* 他の詳細情報も表示する */}
+                            </div>
+                        )}
                     </li>
                 ))}
             </ul>
